@@ -9,15 +9,14 @@ import (
 
 // App - структура, представляющая собой приложение.
 type App struct {
-	web    *fiber.App // web - веб-приложение на основе фреймворка Fiber.
+	web    *fiber.App
 	errLog *log.Logger
-	db     postgres.DBHandler // TODO open
+	db     postgres.DBHandler
 }
 
 func CreateApp(db postgres.DBHandler, errLog *log.Logger) *App {
 	application := fiber.New(fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			errLog.Println(err)
 			return c.SendString(err.Error())
 		},
 	})

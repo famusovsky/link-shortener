@@ -22,6 +22,7 @@ import (
 func main() {
 	overrideTables := flag.Bool("override_tables", false, "Override tables in database")
 	configPath := flag.String("config", "config.toml", "Config file path")
+	useEnv := flag.Bool("use_env", false, "Using environment variables")
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -38,7 +39,7 @@ func main() {
 	}
 
 	var db *sql.DB
-	if dsn := config.DB.Dsn(); dsn == "" {
+	if dsn := config.DB.Dsn(); dsn == "" || *useEnv {
 		db, err = database.OpenViaEnvVars("postgres")
 	} else {
 		db, err = database.OpenViaDsn(dsn, "postgres")
