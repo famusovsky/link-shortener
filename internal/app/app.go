@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// App - структура, представляющая собой приложение.
 type App struct {
 	web    *fiber.App
 	errLog *log.Logger
@@ -32,14 +31,10 @@ func CreateApp(db postgres.DBHandler, errLog *log.Logger) *App {
 	return result
 }
 
-// Run - запуск приложения.
-//
-// Принимает: адрес.
 func (app *App) Run(addr string) {
 	app.errLog.Fatalln(app.web.Listen(addr))
 }
 
-// Shutdown - изящное отключение сервера.
 func (app *App) Shutdown() error {
 	return app.web.Shutdown()
 }

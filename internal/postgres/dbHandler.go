@@ -21,7 +21,6 @@ func (c *Config) Dsn() string {
 
 }
 
-// Get - функция, возвращающая объект, реализующий интерфейс DbHandler.
 func Get(db *sql.DB, override bool) (DBHandler, error) {
 	if override {
 		if err := overrideDB(db); err != nil {

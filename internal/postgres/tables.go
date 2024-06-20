@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// overrideDB - функция, перезаписывающая таблицы WikiSurf в БД.
 func overrideDB(db *sql.DB) error {
 	err := dropTables(db)
 	if err != nil {
@@ -17,7 +16,6 @@ func overrideDB(db *sql.DB) error {
 	return err
 }
 
-// dropTables - функция, удаляющая таблицы WikiSurf в БД.
 func dropTables(db *sql.DB) error {
 	q := strings.Join([]string{
 		dropLinks,
@@ -31,7 +29,6 @@ func dropTables(db *sql.DB) error {
 	return nil
 }
 
-// createTables - функция, добавляющая таблицы WikiSurf в БД.
 func createTables(db *sql.DB) error {
 	q := strings.Join([]string{
 		createLinks,
