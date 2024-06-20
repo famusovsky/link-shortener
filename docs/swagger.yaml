@@ -1,0 +1,64 @@
+info:
+  contact: {}
+  description: This is an api for shortening apis.
+  title: Link Shortener Api
+paths:
+  /:
+    get:
+      consumes:
+      - text/plain
+      description: Get link added to db by the key
+      parameters:
+      - description: Key for the link
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Link
+          schema:
+            type: string
+        "400":
+          description: Error message
+          schema:
+            type: string
+        "504":
+          description: Error message
+          schema:
+            type: string
+      summary: Returns link by the shortened.
+      tags:
+      - links
+    post:
+      consumes:
+      - application/json
+      description: Add link to db and get its key.
+      parameters:
+      - description: Input link
+        in: body
+        name: link
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Key
+          schema:
+            type: string
+        "400":
+          description: Error message
+          schema:
+            type: string
+        "500":
+          description: Error message
+          schema:
+            type: string
+      summary: Adds input link to the DB.
+      tags:
+      - links
+swagger: "2.0"

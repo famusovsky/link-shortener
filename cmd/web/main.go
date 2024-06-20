@@ -15,10 +15,14 @@ import (
 	"cringe-link-shortener/internal/app"
 	"cringe-link-shortener/internal/postgres"
 
+	_ "cringe-link-shortener/docs"
+
 	_ "github.com/lib/pq"
 	"golang.org/x/sync/errgroup"
 )
 
+// @title Link Shortener Api
+// @description This is an api for shortening apis.
 func main() {
 	overrideTables := flag.Bool("override_tables", false, "Override tables in database")
 	configPath := flag.String("config", "config.toml", "Config file path")
