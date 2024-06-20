@@ -1,9 +1,55 @@
+definitions:
+  app.input:
+    properties:
+      link:
+        type: string
+    type: object
+  app.outErr:
+    properties:
+      error:
+        type: string
+    type: object
+  app.output:
+    properties:
+      key:
+        type: string
+    type: object
 info:
   contact: {}
   description: This is an api for shortening apis.
   title: Link Shortener Api
 paths:
   /:
+    post:
+      consumes:
+      - application/json
+      description: Add link to db and get its key.
+      parameters:
+      - description: Input link
+        in: body
+        name: link
+        required: true
+        schema:
+          $ref: '#/definitions/app.input'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Key
+          schema:
+            $ref: '#/definitions/app.output'
+        "400":
+          description: Error message
+          schema:
+            $ref: '#/definitions/app.outErr'
+        "500":
+          description: Error message
+          schema:
+            $ref: '#/definitions/app.outErr'
+      summary: Adds input link to the DB.
+      tags:
+      - links
+  /{key}:
     get:
       consumes:
       - text/plain
@@ -15,50 +61,25 @@ paths:
         required: true
         type: string
       produces:
-      - text/plain
-      responses:
-        "200":
-          description: Link
-          schema:
-            type: string
-        "400":
-          description: Error message
-          schema:
-            type: string
-        "504":
-          description: Error message
-          schema:
-            type: string
-      summary: Returns link by the shortened.
-      tags:
-      - links
-    post:
-      consumes:
       - application/json
-      description: Add link to db and get its key.
-      parameters:
-      - description: Input link
-        in: body
-        name: link
-        required: true
-        schema:
-          type: string
-      produces:
-      - text/plain
       responses:
-        "200":
-          description: Key
+        "302":
+          description: Redirects to link
+          headers:
+            Location:
+              description: Url to redirect
+              type: string
           schema:
             type: string
         "400":
           description: Error message
           schema:
-            type: string
-        "500":
+            $ref: '#/definitions/app.outErr'
+        "404":
           description: Error message
           schema:
-            type: string
-      summary: Adds input link to the DB.
+            $ref: '#/definitions/app.outErr'
+      summary: Returns link by the shortened.
       tags:
       - links
 swagger: "2.0"

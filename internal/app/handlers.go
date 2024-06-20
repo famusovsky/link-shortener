@@ -15,22 +15,23 @@ import (
 // @Summary      Returns link by the shortened.
 // @Description  Get link added to db by the key
 // @Tags         links
-// @Accept       plain
-// @Produce      plain
+// @Accept		 plain
+// @Produce      json
 // @Param        key path string true "Key for the link"
-// @Success      200 {string} string "Link"
-// @Failure      400 {string} string "Error message"
-// @Failure      504 {string} string "Error message"
-// @Router       / [get]
+// @Success      302 {string} string "Redirects to link"
+// @Header       302 {string} Location "Url to redirect"
+// @Failure      400 {object} outErr "Error message"
+// @Failure      404 {object} outErr "Error message"
+// @Router       /{key} [get]
 func (app *App) goTo(c *fiber.Ctx) error {
 	shortened := c.Params("key")
 	id, err := translator.Translate(shortened)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(getErr(err))
 	}
 	url, err := app.db.GetLink(id)
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).SendString(err.Error())
+		return c.Status(fiber.StatusNotFound).JSON(getErr(err))
 	}
 
 	return c.Redirect(url)
@@ -46,25 +47,27 @@ func (app *App) goTo(c *fiber.Ctx) error {
 // @Description  Add link to db and get its key.
 // @Tags         links
 // @Accept       json
-// @Produce      plain
-// @Param        link body string true "Input link"
-// @Success      200 {string} string "Key"
-// @Failure      400 {string} string "Error message"
-// @Failure      500 {string} string "Error message"
+// @Produce      json
+// @Param        link body input true "Input link"
+// @Success      200 {object} output "Key"
+// @Failure      400 {object} outErr "Error message"
+// @Failure      500 {object} outErr "Error message"
 // @Router       / [post]
 func (app *App) addLink(c *fiber.Ctx) error {
-	body := struct {
-		Link string
-	}{}
+	body := input{}
 	err := c.BodyParser(&body)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(getErr(err))
 	}
-	id, err := app.db.AddLink(body.Link)
+	link, err := getUrl(body.Link)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(getErr(err))
+	}
+	id, err := app.db.AddLink(link)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(getErr(err))
 	}
 	shortened := translator.Encrypt(id)
 
-	return c.SendString(shortened)
+	return c.JSON(output{shortened})
 }

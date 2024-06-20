@@ -16,13 +16,59 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/": {
+            "post": {
+                "description": "Add link to db and get its key.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "links"
+                ],
+                "summary": "Adds input link to the DB.",
+                "parameters": [
+                    {
+                        "description": "Input link",
+                        "name": "link",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.input"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Key",
+                        "schema": {
+                            "$ref": "#/definitions/app.output"
+                        }
+                    },
+                    "400": {
+                        "description": "Error message",
+                        "schema": {
+                            "$ref": "#/definitions/app.outErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "$ref": "#/definitions/app.outErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/{key}": {
             "get": {
                 "description": "Get link added to db by the key",
                 "consumes": [
                     "text/plain"
                 ],
                 "produces": [
-                    "text/plain"
+                    "application/json"
                 ],
                 "tags": [
                     "links"
@@ -38,68 +84,56 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Link",
+                    "302": {
+                        "description": "Redirects to link",
                         "schema": {
                             "type": "string"
+                        },
+                        "headers": {
+                            "Location": {
+                                "type": "string",
+                                "description": "Url to redirect"
+                            }
                         }
                     },
                     "400": {
                         "description": "Error message",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/app.outErr"
                         }
                     },
-                    "504": {
+                    "404": {
                         "description": "Error message",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/app.outErr"
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Add link to db and get its key.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "text/plain"
-                ],
-                "tags": [
-                    "links"
-                ],
-                "summary": "Adds input link to the DB.",
-                "parameters": [
-                    {
-                        "description": "Input link",
-                        "name": "link",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Key",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Error message",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Error message",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
+            }
+        }
+    },
+    "definitions": {
+        "app.input": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.outErr": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.output": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
                 }
             }
         }
