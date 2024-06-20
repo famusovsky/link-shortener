@@ -18,7 +18,7 @@ var (
 func (d *dbProcessor) AddLink(link string) (int, error) {
 	wrapErr := errors.New("error while inserting link to the database")
 	var id int
-	if err := d.db.Get(&id, getLinkId); err == nil {
+	if err := d.db.Get(&id, getLinkId, link); err == nil {
 		return id, nil
 	}
 
