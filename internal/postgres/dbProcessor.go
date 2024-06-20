@@ -17,14 +17,16 @@ var (
 
 func (d *dbProcessor) AddLink(link string) (int, error) {
 	wrapErr := errors.New("error while inserting link to the database")
+	var id int
+	if err := d.db.Get(&id, getLinkId); err == nil {
+		return id, nil
+	}
 
 	tx, err := d.db.Begin()
 	if err != nil {
 		return 0, errors.Join(wrapErr, errBeginTx, err)
 	}
 	defer tx.Rollback()
-
-	var id int
 
 	if err = tx.QueryRow(addLink, link).Scan(&id); err != nil {
 		return 0, errors.Join(wrapErr, err)
